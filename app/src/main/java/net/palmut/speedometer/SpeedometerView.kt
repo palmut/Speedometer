@@ -16,6 +16,7 @@ class SpeedometerView
     private val borderPaint: Paint
     private val scalePaint: Paint
     private val numbersPaint: TextPaint
+    private val arrowPaint: Paint
     private val scaleStartAngle: Float
     private val scaleSweepAngle: Float
     private val scalePoints: Int
@@ -28,8 +29,19 @@ class SpeedometerView
     private val scalePointStep: Int
     private val numbers: Array<Number>
     private val numberPadding: Float
+    private var arrowAngle = 0f
 
     private val temp = Rect()
+
+    var value: Int = 0
+        set(value) {
+            if (value != field) {
+                val maxValue = scalePointStep * (scalePoints - 1)
+                field = value.coerceIn(0, maxValue)
+                arrowAngle = scaleStartAngle + scaleSweepAngle / maxValue * field
+                invalidate()
+            }
+        }
 
     init {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.SpeedometerView, defStyleAttr, 0)
@@ -46,8 +58,15 @@ class SpeedometerView
             style = Paint.Style.STROKE
         }
 
+        arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = styledAttributes.getColor(R.styleable.SpeedometerView_arrowColor, DEFAULT_ARROW_COLOR)
+            strokeWidth = styledAttributes.getDimension(R.styleable.SpeedometerView_arrowWidth, DEFAULT_ARROW_WIDTH)
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+        }
+
         numbersPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = styledAttributes.getColor(R.styleable.SpeedometerView_numberColor, DEFAULT_SCALE_COLOR)
+            color = styledAttributes.getColor(R.styleable.SpeedometerView_numberColor, DEFAULT_NUMBER_COLOR)
             style = Paint.Style.FILL_AND_STROKE
             textSize = styledAttributes.getDimension(R.styleable.SpeedometerView_numberTextSize, 0f)
         }
@@ -57,6 +76,7 @@ class SpeedometerView
         scaleStartAngle = startAngle.toFloat()
         val sweepAngle = (endAngle - startAngle).toFloat()
         scaleSweepAngle = sweepAngle.takeIf { it > 0 } ?: 360 + sweepAngle
+        arrowAngle = scaleStartAngle
 
         scalePoints = styledAttributes.getInt(R.styleable.SpeedometerView_points, DEFAULT_POINTS)
         scalePointWidth = styledAttributes.getDimension(R.styleable.SpeedometerView_scalePointWidth, 0f)
@@ -109,7 +129,7 @@ class SpeedometerView
     }
 
     override fun onDraw(canvas: Canvas?) {
-        canvas?.draw {
+        canvas?.saveDraw {
             // border
             drawCircle(centerX, centerY, borderRadius, borderPaint)
             // TODO: scale background???
@@ -125,20 +145,25 @@ class SpeedometerView
                 false,
                 scalePaint)
 
-            val drawScale = save()
-            rotate(scaleStartAngle, centerX, centerY)
-            val stepAngle = scaleSweepAngle / (scalePoints - 1)
-            for (step in 0 until scalePoints) {
-                drawLine(centerX + scaleRadius - scalePointWidth, centerY, centerX + scaleRadius, centerY, scalePaint)
-                rotate(stepAngle, centerX, centerY)
+            saveDraw {
+                rotate(scaleStartAngle, centerX, centerY)
+                val stepAngle = scaleSweepAngle / (scalePoints - 1)
+                for (step in 0 until scalePoints) {
+                    drawLine(centerX + scaleRadius - scalePointWidth, centerY, centerX + scaleRadius, centerY, scalePaint)
+                    rotate(stepAngle, centerX, centerY)
+                }
             }
-            restoreToCount(drawScale)
 
             for (number in numbers) {
-                val save = save()
-                canvas.translate(number.x, number.y)
-                number.content?.draw(this)
-                restoreToCount(save)
+                saveDraw {
+                    translate(number.x, number.y)
+                    number.content?.draw(this)
+                }
+            }
+
+            saveDraw {
+                rotate(arrowAngle, centerX, centerY)
+                drawLine(centerX - scalePointWidth * 2, centerY, centerX + scaleRadius - scalePointWidth * 2, centerY, arrowPaint)
             }
         }
     }
@@ -146,10 +171,13 @@ class SpeedometerView
     companion object {
         private const val DEFAULT_BORDER_COLOR = Color.WHITE
         private const val DEFAULT_BORDER_WIDTH = 1f
-        private const val DEFAULT_SCALE_COLOR = Color.WHITE
+        private const val DEFAULT_ARROW_WIDTH = 1f
+        private const val DEFAULT_ARROW_COLOR = Color.RED
+        private const val DEFAULT_SCALE_COLOR = Color.GRAY
         private const val DEFAULT_SCALE_WIDTH = 1f
         private const val DEFAULT_SCALE_START_ANGLE = 135
         private const val DEFAULT_SCALE_END_ANGLE = 45
+        private const val DEFAULT_NUMBER_COLOR = Color.LTGRAY
         private const val DEFAULT_POINTS = 10
     }
 

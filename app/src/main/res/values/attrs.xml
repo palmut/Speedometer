@@ -16,5 +16,7 @@
         <attr name="numberColor" format="reference|color" />
         <attr name="numberTextSize" format="dimension" />
         <attr name="numberPadding" format="dimension" />
+        <attr name="arrowColor" format="reference|color" />
+        <attr name="arrowWidth" format="dimension" />
     </declare-styleable>
 </resources>
