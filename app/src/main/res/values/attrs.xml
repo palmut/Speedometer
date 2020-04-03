@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SpeedometerView">
+        <attr name="speedometerViewStyle" format="reference" />
+        <attr name="borderColor" format="reference|color" />
+        <attr name="borderWidth" format="reference|dimension" />
+        <attr name="scaleColor" format="reference|color" />
+        <attr name="scalePadding" format="dimension" />
+        <attr name="scaleWidth" format="reference|dimension" />
+        <attr name="scaleStartAngle" format="integer" />
+        <attr name="scaleEndAngle" format="integer" />
+        <attr name="scalePointWidth" format="dimension" />
+        <attr name="points" format="integer" />
+        <attr name="scalePointStep" format="integer" />
+        <attr name="numberColor" format="reference|color" />
+        <attr name="numberTextSize" format="dimension" />
+        <attr name="numberPadding" format="dimension" />
+    </declare-styleable>
+</resources>

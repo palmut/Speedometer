@@ -8,6 +8,7 @@
         <item name="android:windowBackground">@color/colorWindowBackground</item>
 
         <item name="buttonStyle">@style/ButtonStyle</item>
+        <item name="speedometerViewStyle">@style/SpeedometerViewStyle</item>
     </style>
 
 
@@ -19,5 +20,21 @@
         <item name="android:paddingBottom">@dimen/margin_small</item>
         <item name="android:background">@drawable/button_bg</item>
         <item name="android:elevation">@dimen/button_elevation</item>
+    </style>
+
+    <style name="SpeedometerViewStyle">
+        <item name="borderColor">@color/colorPrimary</item>
+        <item name="borderWidth">4dp</item>
+        <item name="scaleColor">@color/colorAccent</item>
+        <item name="scaleWidth">2dp</item>
+        <item name="scalePadding">@dimen/margin_medium</item>
+        <item name="scaleStartAngle">135</item>
+        <item name="scaleEndAngle">45</item>
+        <item name="scalePointWidth">12dp</item>
+        <item name="numberTextSize">24sp</item>
+        <item name="numberColor">@color/colorAccent</item>
+        <item name="numberPadding">@dimen/margin_medium</item>
+        <item name="points">12</item>
+        <item name="scalePointStep">10</item>
     </style>
 </resources>
