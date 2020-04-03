@@ -33,11 +33,11 @@ class SpeedometerView
 
     private val temp = Rect()
 
-    var value: Int = 0
+    var value: Float = 0f
         set(value) {
             if (value != field) {
-                val maxValue = scalePointStep * (scalePoints - 1)
-                field = value.coerceIn(0, maxValue)
+                val maxValue = (scalePointStep * (scalePoints - 1)).toFloat()
+                field = value.coerceIn(0f, maxValue)
                 arrowAngle = scaleStartAngle + scaleSweepAngle / maxValue * field
                 invalidate()
             }

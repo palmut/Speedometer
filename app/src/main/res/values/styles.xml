@@ -37,6 +37,6 @@
         <item name="points">12</item>
         <item name="scalePointStep">10</item>
         <item name="arrowColor">@color/colorArrow</item>
-        <item name="arrowWidth">4dp</item>
+        <item name="arrowWidth">6dp</item>
     </style>
 </resources>

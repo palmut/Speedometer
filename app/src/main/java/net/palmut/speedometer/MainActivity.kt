@@ -46,15 +46,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        job = GlobalScope.launch {
-            var speed = 0
-            var increment = 1
+        job = GlobalScope.launch(Dispatchers.IO) {
+            var speed = 0f
+            var increment = 0.1f
             while (isActive) {
-                speedometer.value = speed
+                withContext(Dispatchers.Main) { speedometer.value = speed }
                 speed += increment
-                if (speed > 110) increment = -1
-                if (speed < 0) increment = 1
-                delay(5)
+                if (speed > 110) increment = -0.1f
+                if (speed < 0) increment = 0.1f
             }
         }
     }
