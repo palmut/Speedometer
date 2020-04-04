@@ -1,4 +1,3 @@
-// ITestAidlInterface.aidl
 package net.palmut.aidlservice;
 
 interface ITestAidlInterface {

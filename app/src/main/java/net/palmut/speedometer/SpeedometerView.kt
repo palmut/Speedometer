@@ -184,6 +184,6 @@ open class SpeedometerView
     private class Number(var x: Float = 0f, var y: Float = 0f, var content: Layout? = null)
 }
 
-open class TachometerView
+class TachometerView
 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = R.attr.tachometerViewStyle) :
         SpeedometerView(context, attrs, defStyleAttr)

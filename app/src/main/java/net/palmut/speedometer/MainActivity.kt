@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var speedometer: SpeedometerView
     private lateinit var tachometer: TachometerView
 
-
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.d(TAG, "onServiceDisconnected")
@@ -80,14 +79,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         val lp = MarginLayoutParams(MATCH_PARENT, MATCH_PARENT)
-        speedometer = SpeedometerView(this).apply {
-            layoutParams = lp
-        }
-        tachometer = TachometerView(this).apply {
-            layoutParams = lp
-        }
+        speedometer = SpeedometerView(this).apply { layoutParams = lp }
+        tachometer = TachometerView(this).apply { layoutParams = lp }
 
         pager.adapter = pagerAdapter
+        pager.setPageTransformer { page, position ->
+            if (position < 0) {
+                page.alpha = 1 + position
+                page.translationX = -position * page.width / 2
+            }
+        }
+        pager.isUserInputEnabled = false
     }
 
     override fun onStart() {
@@ -136,6 +138,7 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, Log.getStackTraceString(e))
                         }
                     }
+                    delay(57)
                 }
             }
         }
@@ -152,5 +155,5 @@ class MainActivity : AppCompatActivity() {
         private const val PAGE_TACHOMETER = 1
     }
 
-    private class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+    private class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }
