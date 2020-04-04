@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.speed.observe(this, Observer { speed ->
-            speedometer.value = speed.toFloat()
+            speedometer.value = speed
         })
     }
 

@@ -1,2 +1,3 @@
+include ':aidlservice'
 include ':app'
 rootProject.name = "Speedometer"
