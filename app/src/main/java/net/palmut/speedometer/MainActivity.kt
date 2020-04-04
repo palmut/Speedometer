@@ -7,12 +7,16 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import java.security.SecureRandom
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel by viewModels<SpeedometerVM>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +33,9 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.button_c_text, Toast.LENGTH_SHORT).show()
         }
 
+        viewModel.speed.observe(this, Observer { speed ->
+            speedometer.value = speed.toFloat()
+        })
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -40,27 +47,6 @@ class MainActivity : AppCompatActivity() {
         super.onConfigurationChanged(newConfig)
 
         hideSystemUI()
-    }
-
-    lateinit var job: Job
-
-    override fun onResume() {
-        super.onResume()
-        job = GlobalScope.launch(Dispatchers.IO) {
-            var speed = 0f
-            var increment = 0.1f
-            while (isActive) {
-                withContext(Dispatchers.Main) { speedometer.value = speed }
-                speed += increment
-                if (speed > 110) increment = -0.1f
-                if (speed < 0) increment = 0.1f
-            }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        job.cancel()
     }
 
     private fun hideSystemUI() {
