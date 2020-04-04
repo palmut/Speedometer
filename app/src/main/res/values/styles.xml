@@ -9,6 +9,7 @@
 
         <item name="buttonStyle">@style/ButtonStyle</item>
         <item name="speedometerViewStyle">@style/SpeedometerViewStyle</item>
+        <item name="tachometerViewStyle">@style/TachometerViewStyle</item>
     </style>
 
 
@@ -34,8 +35,26 @@
         <item name="numberTextSize">24sp</item>
         <item name="numberColor">@color/colorAccent</item>
         <item name="numberPadding">@dimen/margin_small</item>
-        <item name="points">12</item>
+        <item name="points">17</item>
         <item name="scalePointStep">10</item>
+        <item name="arrowColor">@color/colorArrow</item>
+        <item name="arrowWidth">6dp</item>
+    </style>
+
+    <style name="TachometerViewStyle">
+        <item name="borderColor">@color/colorPrimary</item>
+        <item name="borderWidth">4dp</item>
+        <item name="scaleColor">@color/colorArrow</item>
+        <item name="scaleWidth">2dp</item>
+        <item name="scalePadding">@dimen/margin_medium</item>
+        <item name="scaleStartAngle">145</item>
+        <item name="scaleEndAngle">35</item>
+        <item name="scalePointWidth">12dp</item>
+        <item name="numberTextSize">28sp</item>
+        <item name="numberColor">@color/colorArrow</item>
+        <item name="numberPadding">@dimen/margin_small</item>
+        <item name="points">10</item>
+        <item name="scalePointStep">1</item>
         <item name="arrowColor">@color/colorArrow</item>
         <item name="arrowWidth">6dp</item>
     </style>

@@ -1,22 +1,68 @@
 package net.palmut.speedometer
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.*
+import android.view.ViewGroup.LayoutParams.*
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
-import java.security.SecureRandom
-import kotlin.random.Random
+import net.palmut.aidlservice.ITestAidlInterface
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<SpeedometerVM>()
+    private var dataProvider: ITestAidlInterface? = null
+    private var readData: Job? = null
+    private lateinit var speedometer: SpeedometerView
+    private lateinit var tachometer: TachometerView
+
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Log.d(TAG, "onServiceDisconnected")
+            stopReceiveData()
+            dataProvider = null
+        }
+
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d(TAG, "onServiceConnected")
+            dataProvider = ITestAidlInterface.Stub.asInterface(service)
+            startReceiveData()
+        }
+
+    }
+
+    private val pagerAdapter = object : RecyclerView.Adapter<ViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return when (viewType) {
+                PAGE_SPEEDOMETER -> ViewHolder(speedometer)
+                PAGE_TACHOMETER -> ViewHolder(tachometer)
+                else -> ViewHolder(View(parent.context).apply {
+                    layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
+                })
+            }
+        }
+
+        override fun getItemCount() = PAGES_COUNT
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            // do nothing
+        }
+
+        override fun getItemViewType(position: Int) = position
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +79,34 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.button_c_text, Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.speed.observe(this, Observer { speed ->
-            speedometer.value = speed
-        })
+        val lp = MarginLayoutParams(MATCH_PARENT, MATCH_PARENT)
+        speedometer = SpeedometerView(this).apply {
+            layoutParams = lp
+        }
+        tachometer = TachometerView(this).apply {
+            layoutParams = lp
+        }
+
+        pager.adapter = pagerAdapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        try {
+            val intent = Intent().setComponent(ComponentName("net.palmut.aidlservice", "net.palmut.aidlservice.TestAIDLService"))
+                    .setAction("net.palmut.speedomenter.DATA")
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        } catch (e: Exception) {
+            Log.e(TAG, Log.getStackTraceString(e))
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (dataProvider != null) {
+            unbindService(connection)
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -45,7 +116,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-
         hideSystemUI()
     }
 
@@ -54,7 +124,33 @@ class MainActivity : AppCompatActivity() {
             View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     }
 
+    private fun startReceiveData() {
+        readData = lifecycleScope.launch(Dispatchers.IO) {
+            while (isActive && dataProvider != null) {
+                dataProvider?.run {
+                    withContext(Dispatchers.Main) {
+                        try {
+                            speedometer.value = speed().toFloat()
+                            tachometer.value = rpm().toFloat() / 1000
+                        } catch (e: java.lang.Exception) {
+                            Log.d(TAG, Log.getStackTraceString(e))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stopReceiveData() {
+        readData?.cancel()
+    }
+
     companion object {
         private const val TAG = "MainActivity"
+        private const val PAGES_COUNT = 2
+        private const val PAGE_SPEEDOMETER = 0
+        private const val PAGE_TACHOMETER = 1
     }
+
+    private class ViewHolder(view: View): RecyclerView.ViewHolder(view)
 }

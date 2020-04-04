@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import kotlin.math.*
 
-class SpeedometerView
+open class SpeedometerView
 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = R.attr.speedometerViewStyle) :
         View(context, attrs, defStyleAttr) {
 
@@ -183,3 +183,7 @@ class SpeedometerView
 
     private class Number(var x: Float = 0f, var y: Float = 0f, var content: Layout? = null)
 }
+
+open class TachometerView
+@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = R.attr.tachometerViewStyle) :
+        SpeedometerView(context, attrs, defStyleAttr)

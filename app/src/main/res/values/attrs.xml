@@ -3,6 +3,7 @@
 
     <declare-styleable name="SpeedometerView">
         <attr name="speedometerViewStyle" format="reference" />
+        <attr name="tachometerViewStyle" format="reference" />
         <attr name="borderColor" format="reference|color" />
         <attr name="borderWidth" format="reference|dimension" />
         <attr name="scaleColor" format="reference|color" />
