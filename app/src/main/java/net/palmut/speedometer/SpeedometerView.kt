@@ -34,7 +34,7 @@ open class SpeedometerView
     private val numbers: Array<Number>
     private val numberPadding: Float
     private var arrowAngle = 0f
-    private var bgClipPath: Path? = null
+    private var bgClipPath = Path()
     private val scaleBackground: Drawable?
 
     private val temp = Rect()
@@ -137,7 +137,10 @@ open class SpeedometerView
 
         scaleBackground?.apply {
             setBounds(0, 0, width, height)
-            bgClipPath = Path().apply { addCircle(centerX, centerY, borderRadius, Path.Direction.CW) }
+            bgClipPath.apply {
+                reset()
+                addCircle(centerX, centerY, borderRadius, Path.Direction.CW)
+            }
         }
 
     }

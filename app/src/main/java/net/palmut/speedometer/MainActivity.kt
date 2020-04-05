@@ -4,14 +4,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.res.Configuration
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.*
-import android.view.ViewGroup.LayoutParams.*
+import android.view.ViewGroup.LayoutParams
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
         pager.adapter = pagerAdapter
         pager.setPageTransformer { page, position ->
-            if (position < 0) {
+            if (position <= 0) {
                 page.alpha = 1 + position
                 page.translationX = -position * page.width / 2
                 page.scaleX = 1 - abs(position / 6.7f)
@@ -113,11 +113,6 @@ class MainActivity : AppCompatActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) hideSystemUI()
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        hideSystemUI()
     }
 
     private fun hideSystemUI() {
