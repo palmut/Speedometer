@@ -3,4 +3,5 @@
     <string name="button_a_text">Button A</string>
     <string name="button_b_text">Button B</string>
     <string name="button_c_text">Button C</string>
+    <string name="cant_bind_service_message">Please install the AIDL service APK</string>
 </resources>

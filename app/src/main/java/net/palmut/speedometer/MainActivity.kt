@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import net.palmut.aidlservice.ITestAidlInterface
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,15 +69,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        buttonA.setOnClickListener {
-            Toast.makeText(this, R.string.button_a_text, Toast.LENGTH_SHORT).show()
-        }
-        buttonB.setOnClickListener {
-            Toast.makeText(this, R.string.button_b_text, Toast.LENGTH_SHORT).show()
-        }
-        buttonC.setOnClickListener {
-            Toast.makeText(this, R.string.button_c_text, Toast.LENGTH_SHORT).show()
-        }
+        buttonA.setOnClickListener { Toast.makeText(this, R.string.button_a_text, Toast.LENGTH_SHORT).show() }
+        buttonB.setOnClickListener { Toast.makeText(this, R.string.button_b_text, Toast.LENGTH_SHORT).show() }
+        buttonC.setOnClickListener { Toast.makeText(this, R.string.button_c_text, Toast.LENGTH_SHORT).show() }
 
         val lp = MarginLayoutParams(MATCH_PARENT, MATCH_PARENT)
         speedometer = SpeedometerView(this).apply { layoutParams = lp }
@@ -87,6 +82,8 @@ class MainActivity : AppCompatActivity() {
             if (position < 0) {
                 page.alpha = 1 + position
                 page.translationX = -position * page.width / 2
+                page.scaleX = 1 - abs(position / 6.7f)
+                page.scaleY = page.scaleX
             }
         }
         pager.isUserInputEnabled = false
@@ -98,7 +95,9 @@ class MainActivity : AppCompatActivity() {
         try {
             val intent = Intent().setComponent(ComponentName("net.palmut.aidlservice", "net.palmut.aidlservice.TestAIDLService"))
                     .setAction("net.palmut.speedomenter.DATA")
-            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+            if (!bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+                Toast.makeText(this, R.string.cant_bind_service_message, Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             Log.e(TAG, Log.getStackTraceString(e))
         }
@@ -127,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startReceiveData() {
-        readData = lifecycleScope.launch(Dispatchers.IO) {
+        readData = lifecycleScope.launch(Dispatchers.Default) {
             while (isActive && dataProvider != null) {
                 dataProvider?.run {
                     withContext(Dispatchers.Main) {
@@ -138,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, Log.getStackTraceString(e))
                         }
                     }
-                    delay(57)
+                    delay(10)
                 }
             }
         }
