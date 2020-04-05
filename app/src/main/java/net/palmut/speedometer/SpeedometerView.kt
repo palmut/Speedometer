@@ -2,12 +2,16 @@ package net.palmut.speedometer
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.hypot
+import kotlin.math.sin
 
 open class SpeedometerView
 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = R.attr.speedometerViewStyle) :
@@ -30,6 +34,8 @@ open class SpeedometerView
     private val numbers: Array<Number>
     private val numberPadding: Float
     private var arrowAngle = 0f
+    private var bgClipPath: Path? = null
+    private val scaleBackground: Drawable?
 
     private val temp = Rect()
 
@@ -86,6 +92,8 @@ open class SpeedometerView
         numbers = Array(scalePoints) { Number() }
         numberPadding = styledAttributes.getDimension(R.styleable.SpeedometerView_numberPadding, 0f)
 
+        scaleBackground = styledAttributes.getDrawable(R.styleable.SpeedometerView_scaleBackground)
+
         styledAttributes.recycle()
     }
 
@@ -126,13 +134,26 @@ open class SpeedometerView
             }
             startRd -= stepRd
         }
+
+        scaleBackground?.apply {
+            setBounds(0, 0, width, height)
+            bgClipPath = Path().apply { addCircle(centerX, centerY, borderRadius, Path.Direction.CW) }
+        }
+
     }
 
     override fun onDraw(canvas: Canvas?) {
         canvas?.saveDraw {
+            // scale background
+            scaleBackground?.also { bg ->
+                saveDraw {
+                    clipPath(requireNotNull(bgClipPath))
+                    bg.draw(this)
+                }
+            }
+
             // border
             drawCircle(centerX, centerY, borderRadius, borderPaint)
-            // TODO: scale background???
 
             // scale
             drawArc(
@@ -154,6 +175,7 @@ open class SpeedometerView
                 }
             }
 
+            // numbers
             for (number in numbers) {
                 saveDraw {
                     translate(number.x, number.y)
@@ -161,6 +183,7 @@ open class SpeedometerView
                 }
             }
 
+            // arrow
             saveDraw {
                 rotate(arrowAngle, centerX, centerY)
                 drawLine(centerX - scalePointWidth * 2, centerY, centerX + scaleRadius - scalePointWidth * 2, centerY, arrowPaint)

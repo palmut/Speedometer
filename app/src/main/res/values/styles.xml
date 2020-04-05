@@ -12,7 +12,6 @@
         <item name="tachometerViewStyle">@style/TachometerViewStyle</item>
     </style>
 
-
     <style name="ButtonStyle" parent="TextAppearance.AppCompat.Button">
         <item name="android:minWidth">@dimen/min_button_width</item>
         <item name="android:paddingStart">@dimen/margin_medium</item>
@@ -39,6 +38,7 @@
         <item name="scalePointStep">10</item>
         <item name="arrowColor">@color/colorArrow</item>
         <item name="arrowWidth">6dp</item>
+        <item name="scaleBackground">@color/scaleBackgroundColor</item>
     </style>
 
     <style name="TachometerViewStyle">
@@ -57,5 +57,6 @@
         <item name="scalePointStep">1</item>
         <item name="arrowColor">@color/colorArrow</item>
         <item name="arrowWidth">6dp</item>
+        <item name="scaleBackground">@color/scaleBackgroundColor</item>
     </style>
 </resources>

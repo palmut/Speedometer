@@ -17,7 +17,7 @@ class TestAIDLService : Service() {
         }
 
         override fun speed(): Int {
-            return MAX_SPEED / 2 + (MAX_SPEED / 2 * sin(value) + MAX_SPEED / 10 * sin(2 * value) + MAX_SPEED / 20 * sin(4 * value)).toInt()
+            return MAX_SPEED / 2 + (MAX_SPEED / 2 * sin(value) + MAX_SPEED / 30 * sin(20 * value) + MAX_SPEED / 41 * sin(23 * value)).toInt()
         }
 
     }

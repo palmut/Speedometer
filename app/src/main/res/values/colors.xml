@@ -6,4 +6,5 @@
     <color name="colorWindowBackground">#FF000000</color>
     <color name="colorRipple">#88FFFFFF</color>
     <color name="colorArrow">#FFBB1122</color>
+    <color name="scaleBackgroundColor">#cc111122</color>
 </resources>
